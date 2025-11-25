@@ -1,207 +1,227 @@
-# GreenCard Rehberi — İnteraktif Başvuru Kılavuzu
+# Green Card Rehberi
 
-Türkçe, statik HTML tabanlı, **Green Card (DV Lottery)** başvurusu için tamamlayıcı bilgi, rehber ve araçlar sunan responsive web sitesi.
+Amerika **DV Lottery (Green Card) Çekilişi** için hazırlanmış Türkçe bilgilendirme ve araç web sitesi. Tamamen statik HTML/CSS/JavaScript ile geliştirilmiş, hosting gerektirmeden çalıştırılabilen responsive bir projedir.
 
-## Özellikler
+## 🎯 Proje Amacı
 
-- **📰 Güncel Haberler:** DV Lottery duyuruları ve önemli tarihler (`data/news.json` ile yönetilir)
-- **📖 Başvuru Rehberi:** Adım adım başvuru süreci ve ipuçları
-- **📋 Belgeler:** Duruma göre (medeni durum, çocuk, eğitim) gerekli belgeler filtreli liste
-- **🖼️ Fotoğraf Kontrolü:** Tarayıcıda (sunucuya gönderilmeden) boyut, format, arka plan ve yüz pozisyonu kontrolü
-- **❓ SSS:** Sık sorulan sorular ve cevaplar
-- **💬 İletişim:** Form (client-side, sunucuya veri gönderilmez) + sosyal medya bağlantıları
-- **Responsive Design:** Bootstrap 5 ile mobile uyumlu
-- **Template System:** Navbar ve footer dinamik olarak tüm sayfalara yüklenir (`js/components.js`)
+Green Card başvurusu yapacak Türkiye'deki kullanıcılara:
+- Başvuru sürecini adım adım anlatan rehber
+- Gerekli belgeleri listeleyen ve filtreleyen sistem
+- Fotoğraf gereksinimlerini kontrol eden araç
+- Güncel haberleri takip edebilecekleri dinamik sistem
+- Sık sorulan soruların cevapları
+sunarak başvuru sürecini kolaylaştırmayı amaçlar.
 
-## Dosya Yapısı
+## ✨ Özellikler
+
+### Ana Sayfa (index.html)
+- **Geri Sayım Sayacı:** DV-2027 başvuru tarihi için canlı countdown
+- **İstatistikler:** Yıllık kota, başvuru sayıları, kazanma şansı
+- **Şans Hesaplayıcı:** Yaş, eğitim ve deneme sayısına göre tahmini hesaplama (eğlence amaçlı)
+- **Başarı Hikayeleri:** Motivasyon için örnek hikayeler
+- **Güncel Haberler:** `data/news.json` dosyasından dinamik yüklenen haberler
+
+### Rehber Sayfası (guide.html)
+- Başvuru öncesi hazırlık adımları
+- Online başvuru süreci detayları
+- Başvuru sonrası yapılacaklar
+- Önemli tarihler ve süreçler
+
+### Belgeler Sayfası (documents.html)
+- Duruma göre (medeni durum, çocuk sayısı, eğitim) filtrelenebilir belge listesi
+- Her belge için detaylı açıklama sayfası (belgeler-detay.html)
+- Pasaport, diploma, evlilik belgesi vb. için gereksinimler
+
+### SSS Sayfası (faq.html)
+- Accordion yapısında organize edilmiş sorular
+- Başvuru, fotoğraf, kazanma, vizite dair detaylı cevaplar
+
+### İletişim Sayfası (contact.html)
+- E-posta ile iletişim formu (client-side, mailto: ile çalışır)
+- Sosyal medya linkleri
+- İletişim bilgileri
+
+### Teknik Özellikler
+- **Responsive Design:** Bootstrap 5 ile mobil uyumlu
+- **Component System:** Navbar ve footer merkezi şablonlardan (`templates/`) dinamik yüklenir
+- **SEO Optimizasyonu:** Meta tags, sitemap.xml, robots.txt, Open Graph
+- **Gizlilik Odaklı:** Hiçbir veri toplanmaz, tüm işlemler client-side
+- **Kolay Güncelleme:** JSON tabanlı haber sistemi, HTML template'ler
+
+## 📁 Dosya Yapısı
 
 ```
 greencardrehberi/
-├── index.html              # Ana sayfa (haberler)
-├── guide.html              # Başvuru rehberi
-├── documents.html          # Belgeler + filtre
-├── photo.html              # Fotoğraf kontrolü aracı
-├── faq.html                # SSS/FAQ
-├── contact.html            # İletişim + form
+├── index.html                # Ana sayfa (countdown, istatistikler, haberler)
+├── guide.html                # Başvuru rehberi
+├── documents.html            # Belgeler sayfası (filtreleme sistemi)
+├── belgeler-detay.html       # Belge detay sayfası
+├── faq.html                  # SSS/FAQ
+├── contact.html              # İletişim sayfası
+├── sitemap.xml               # SEO sitemap
+├── robots.txt                # Arama motoru kuralları
+├── favicon.png               # Site ikonu
+│
 ├── css/
-│   └── style.css           # Özel stiller (navbar, footer, flex layout)
+│   ├── style.css             # Ana stil dosyası
+│   └── style.css.bak         # Yedek stil dosyası
+│
 ├── js/
-│   ├── components.js       # Navbar/footer dinamik yükleyici
-│   ├── site.js             # Haberler, belgeler yönetimi
-│   └── photo-checker.js    # Fotoğraf doğrulama
+│   ├── components.js         # Navbar/footer yükleyici
+│   ├── site.js               # Haberler ve belge yönetimi
+│   └── components.js.backup  # Yedek component dosyası
+│
 ├── templates/
-│   ├── navbar.html         # Navbar template (tüm sayfalar tarafından yüklenir)
-│   └── footer.html         # Footer template
+│   ├── navbar.html           # Merkezi navbar şablonu
+│   └── footer.html           # Merkezi footer şablonu
+│
 ├── data/
-│   └── news.json           # Haberler verisi (manuel güncellenebilir)
-└── README.md               # Bu dosya
+│   └── news.json             # Haberler verisi
+│
+└── favico/                   # Favicon dosyaları
 ```
 
-## Yerel Çalıştırma
+## 🚀 Kurulum ve Çalıştırma
 
-### 1. Python HTTP Sunucusu (Önerilen)
+### Yöntem 1: Python HTTP Server (Önerilen)
 
 ```powershell
-cd "c:\Users\akans\OneDrive\Masaüstü\ZevkiProjeler\greencardrehberi"
+cd "proje_klasörü_yolu"
 python -m http.server 8000
 ```
 
-Tarayıcıda açın: **http://localhost:8000**
+Tarayıcıda açın: `http://localhost:8000`
 
-### 2. Direkt Tarayıcıda
+### Yöntem 2: Live Server (VS Code)
 
-`index.html` dosyasını tarayıcıda açın (bazı features sınırlı olabilir).
+VS Code'da Live Server eklentisini kurun ve `index.html` üzerinde sağ tık → "Open with Live Server"
 
-## Kullanım Rehberi
+### Yöntem 3: Direkt Tarayıcı
 
-### 📰 Haberleri Güncelleme
+`index.html` dosyasına çift tıklayın (bazı özellikler CORS nedeniyle çalışmayabilir)
 
-`data/news.json` dosyasını açın ve yeni haberler ekleyin:
+## 🔧 İçerik Güncelleme
 
+### Haberler
+`data/news.json` dosyasını düzenleyin:
 ```json
 [
   {
-    "title": "DV Lottery 2026 - Başvurular Başladı",
-    "date": "2025-11-01",
-    "body": "Resmi başvuru linki travel.state.gov adresinde açılmıştır."
-  },
-  ...
+    "title": "Haber başlığı",
+    "date": "2025-11-25",
+    "body": "Haber içeriği buraya..."
+  }
 ]
 ```
 
-### 📋 Belgeler Listesini Güncelleme
+### Navbar/Footer
+`templates/navbar.html` veya `templates/footer.html` dosyalarını düzenleyin. Tüm sayfalar otomatik güncellenecektir.
 
-`js/site.js` içindeki `buildDocsList()` fonksiyonunu düzenleyin — duruma göre belgeler otomatik listelenecek.
+### Belgeler
+`js/site.js` içindeki `buildDocsList()` fonksiyonunu düzenleyerek belge listesini özelleştirin.
 
-### 🖼️ Fotoğraf Kontrolü
-
-1. `photo.html` sayfasına gidin
-2. JPG/PNG fotoğraf seçin
-3. Kontroller otomatik çalışacak:
-   - Dosya formatı
-   - Boyut/kare kontrolü (600x600 px)
-   - Dosya boyutu uyarısı
-   - Yüz pozisyonu tahmini (arka plan parlaklığı analizi)
-
-Tüm işlem **tarayıcıda** gerçekleşir; sunucuya hiç gönderilmez.
-
-### 💬 İletişim Formu
-
-`contact.html` sayfasında form doldurursanız, doğrudan e-posta istemciniz açılır. Veri saklanmaz.
-
-## Teknik Detaylar
-
-### Navbar & Footer Yönetimi
-
-- `templates/navbar.html` ve `footer.html` merkezi şablonlar
-- `js/components.js` sayfası yüklenince `fetch()` ile bu dosyaları yükler
-- Güncelleme gerekirse sadece şablonları düzenleyin — tüm sayfalar otomatik güncellenir
-
-### Layout (Fixed Navbar + Sticky Footer)
-
-- Navbar: `fixed-top` (sabit üstte)
-- Body: `d-flex-min-vh` (flex layout, min-height 100vh)
-- Main: `flex-fill` (kalan alan doldurur)
-- Footer: `footer-sticky` (aşağıda kalır)
-
-### Fotoğraf Kontrolü Algoritması
-
-1. **Format:** JPG/PNG kontrolü
-2. **Boyut:** Minimum 600x600 px
-3. **Kare:** Genişlik = yükseklik kontrolü
-4. **Heuristic:** Merkez bölge vs. köşeler parlaklık farkı (yüz merkezde olup olmadığı tahmini)
-
-**Not:** Bu hafif bir tahmini kontroldür. Resmi DV Lottery daha katı kuralları vardır.
-
-## Önemli Notlar
-
-⚠️ **Bu site bir yardımcı araçtır.**
-- Resmi ve güncel bilgi **travel.state.gov** adresinde
-- Fotoğraf kontrolü heuristic (tahmini) — yüzde 100 güvenilir değildir
-- Belgeler listesi örnek niteliğindedir — ülkeniz ve durumunuz için resmi kaynaklardan kontrol edin
-- Başvuru öncesinde mutlaka resmi formu ve gereksinimleri okuyun
-
-## Gizlilik & Veri
-
-✅ **Bu site hiçbir veri toplamaz ve saklamaz:**
-- Fotoğraflar cihazınızda işlenir, sunucuya **gönderilmez**
-- İletişim formu e-posta istemcinizi açar, veritabanı yoktur
-- Haberler statik JSON dosyasından yüklenir
-- Google Analytics veya reklam kodu yok
-
-## Geliştirme & Genişletme
-
-### Yeni Sayfa Ekleme
-
-1. Yeni HTML dosyası oluşturun (ör. `new-page.html`)
-2. `<div id="navbar-container"></div>` ekleyin
-3. `<div id="footer-container"></div>` ekleyin
-4. Sonunda şu scriptleri ekleyin:
-```html
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/components.js"></script>
+### Geri Sayım Tarihi
+`index.html` içindeki `targetDate` değerini değiştirin:
+```javascript
+const targetDate = new Date('2025-10-04T12:00:00').getTime();
 ```
-5. `templates/navbar.html` içindeki menüye link ekleyin
 
-### Backend Entegrasyonu
+## 🛠️ Teknik Detaylar
 
-Ileride dinamik özellikler eklemek isterseniz:
-- **PHP:** HTML template'leri `include()` ile yükleyin
-- **Node.js/Express:** Server-side rendering
-- **Statik Site Generatörü:** Hugo, Jekyll vb.
+### Component System
+- `js/components.js` ile navbar ve footer dinamik yüklenir
+- `fetch()` API kullanılarak `templates/` klasöründen HTML içerik çekilir
+- Tek bir yerden tüm sayfaların header/footer'ı yönetilir
 
-## Lisans & Sorumluluk
+### Layout Mimarisi
+- **Fixed Navbar:** Sayfada kaydırırken üstte sabit kalır
+- **Flexbox Layout:** Body `min-height: 100vh` ile tam sayfa kaplar
+- **Sticky Footer:** İçerik az olsa da footer altta kalır
+- **Responsive Grid:** Bootstrap 5 grid sistemi kullanılır
 
-Bu site eğitim amaçlıdır. Green Card başvurusu hakkında resmi ve en güncel bilgiler için **travel.state.gov** adresini ziyaret edin.
+### Dinamik Özellikler
+- **Countdown Timer:** JavaScript setInterval ile gerçek zamanlı güncellenir
+- **Şans Hesaplayıcı:** Client-side formül ile anında sonuç verir
+- **Haber Sistemi:** JSON dosyasından dinamik kart oluşturulur
+- **Belge Filtreleme:** Checkbox'lara göre listeleme yapılır
+
+### SEO ve Performans
+- Semantic HTML5 kullanımı
+- Meta tags (description, keywords, OG tags)
+- Sitemap.xml ve robots.txt
+- CDN üzerinden Bootstrap ve JS kütüphaneleri
+- Minimal JavaScript, hızlı yükleme
+
+## ⚠️ Önemli Notlar
+
+Bu site **bilgilendirme ve yardımcı araç** amaçlıdır:
+- Resmi bilgiler için **travel.state.gov** adresini ziyaret edin
+- Başvuru ve süreç hakkında kesin bilgi için ABD Dışişleri Bakanlığı'nın resmi kaynaklarını kullanın
+- Şans hesaplayıcı ve tahminler tamamen eğlence amaçlıdır
+- Site hiçbir başvuruyu işleme almaz veya resmi bir platform değildir
+
+## 🔒 Gizlilik
+
+✅ **Tamamen offline çalışır:**
+- Hiçbir kullanıcı verisi toplanmaz
+- Hiçbir tracking/analytics servisi yok
+- Tüm hesaplamalar tarayıcıda yapılır
+- Form verileri sunucuya gönderilmez (mailto: kullanılır)
+- Cookie kullanılmaz
+
+## 🌐 Deployment (Yayınlama)
+
+### Web Hosting'e Yükleme
+
+1. FTP/cPanel ile tüm dosyaları hosting'e yükleyin
+2. `public_html/` veya `www/` klasörüne upload edin
+3. `sitemap.xml` içindeki domain'i güncelleyin
+4. `robots.txt` dosyasını kontrol edin
+
+### Ücretsiz Hosting Seçenekleri
+- **GitHub Pages:** Repo oluşturup Settings → Pages'den aktif et
+- **Netlify:** Drag & drop ile anında yayınla
+- **Vercel:** Git ile bağlanıp otomatik deploy
+- **InfinityFree:** Ücretsiz PHP hosting (cPanel ile)
+
+### SEO Ayarları
+
+**Google Search Console:**
+1. https://search.google.com/search-console adresine git
+2. Site ekle ve doğrula
+3. `sitemap.xml` dosyasını gönder
+
+**Mevcut SEO Özellikleri:**
+- ✅ Meta description, keywords
+- ✅ Open Graph ve Twitter Card tags
+- ✅ Semantic HTML5 
+- ✅ Sitemap.xml ve robots.txt
+- ✅ Responsive design
+
+## 🔄 Geliştirme Planı
+
+### Yapılabilecek İyileştirmeler
+- [ ] Blog/Makale bölümü ekle
+- [ ] Daha fazla başarı hikayesi
+- [ ] Video anlatım içerikleri
+- [ ] Çoklu dil desteği (İngilizce)
+- [ ] Dark mode tema
+- [ ] Progressive Web App (PWA) özellikleri
+- [ ] Başvuru kontrol listesi (checklist) sayfası
+
+### Yeni Sayfa Eklemek İçin
+1. HTML dosyası oluştur
+2. `<div id="navbar-container"></div>` ve `<div id="footer-container"></div>` ekle
+3. Bootstrap ve `components.js` script'lerini ekle
+4. `templates/navbar.html` menüsüne link ekle
+
+## 📄 Lisans
+
+Bu proje eğitim ve bilgilendirme amaçlıdır. Resmi Green Card başvurusu ve bilgileri için **travel.state.gov** adresini ziyaret edin.
 
 ---
 
-## 🚀 Hosting ve SEO
-
-### Hosting'e Yükleme
-
-1. Tüm dosyaları (klasör yapısını koruyarak) hosting'inizin root klasörüne yükleyin
-2. Genellikle `public_html/` veya `www/` klasörüne yüklenir
-3. `sitemap.xml` dosyasındaki `yoursite.com` kısımlarını kendi domain'inizle değiştirin
-4. `robots.txt` dosyasındaki domain'i güncelleyin
-
-### Google'a Kaydetme
-
-1. **Google Search Console:** https://search.google.com/search-console
-   - Site ekle → Domain doğrula
-   - Sitemap gönder: `https://yoursite.com/sitemap.xml`
-
-2. **Google Analytics** (opsiyonel):
-   - Hesap oluştur: https://analytics.google.com
-   - Tracking code'u her sayfanın `<head>` bölümüne ekle
-
-3. **Bing Webmaster Tools:** https://www.bing.com/webmasters
-   - Site ekle ve sitemap gönder
-
-### SEO İpuçları
-
-✅ **Yapıldı:**
-- Meta description ve keywords tüm sayfalarda
-- Semantic HTML (h1, h2, header, main, footer)
-- robots.txt ve sitemap.xml
-- Canonical URL'ler
-- Open Graph ve Twitter Card meta tagları
-
-📝 **Yapılacaklar:**
-- İçeriğe düzenli yeni haberler ekle (`data/news.json`)
-- Blog yazıları/makaleler ekle (daha fazla içerik = daha iyi SEO)
-- Backlink'ler oluştur (forumlar, sosyal medya)
-- Site hızını optimize et (resim sıkıştırma, CDN)
-- SSL sertifikası ekle (HTTPS) - hosting sağlayıcıdan ücretsiz Let's Encrypt
-
-### Sosyal Medya Paylaşımı
-
-Site canlıya alındıktan sonra:
-- Facebook/Twitter/LinkedIn'de paylaş
-- İlgili forumlarda (ör. Ekşi Sözlük, Reddit r/greencard) linki paylaş
-- Green Card başvuru gruplarında yardımcı kaynak olarak öner
-
----
-
-**Son Güncelleme:** 24 Kasım 2025
+**Geliştirici:** sametakan29  
+**Son Güncelleme:** 25 Kasım 2025  
+**Versiyon:** 1.0
 
