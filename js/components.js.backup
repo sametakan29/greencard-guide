@@ -1,0 +1,157 @@
+// components.js — dynamically load navbar and footer templates
+(function() {
+  async function loadComponent(id, path) {
+    try {
+      const response = await fetch('templates/' + path);
+      if (!response.ok) throw new Error(`Failed to load ${path}`);
+      const html = await response.text();
+      document.getElementById(id).innerHTML = html;
+      setActiveNavLink();
+      setupDarkModeToggle();
+    } catch (error) {
+      console.warn('Could not load component:', path, error);
+    }
+  }
+  
+  function setActiveNavLink() {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href === currentPage) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
+  
+  let darkModeInitialized = false;
+  
+  function setupDarkModeToggle() {
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (!darkModeToggle) {
+      console.warn('Dark mode toggle button not found');
+      return;
+    }
+    
+    // Sync button state with current body dark-mode status
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    updateButtonState(isDarkMode);
+    applyInlineStyles(isDarkMode);
+    
+    // Only add event listener once
+    if (!darkModeInitialized) {
+      darkModeInitialized = true;
+      
+      // Toggle dark mode on button click
+      darkModeToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const isCurrentlyDark = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', String(isCurrentlyDark));
+        updateButtonState(isCurrentlyDark);
+        applyInlineStyles(isCurrentlyDark);
+        
+        console.log('Dark mode toggled:', isCurrentlyDark);
+        console.log('Body classes:', document.body.className);
+        console.log('Body background:', document.body.style.backgroundColor);
+      });
+      
+      console.log('Dark mode toggle initialized');
+    }
+  }
+  
+  function updateButtonState(isDarkMode) {
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (!darkModeToggle) return;
+    
+    darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+    darkModeToggle.title = isDarkMode ? 'Açık Tema' : 'Karanlık Tema';
+  }
+  
+  function applyInlineStyles(isDarkMode) {
+    // Force inline styles as fallback if CSS doesn't work
+    if (isDarkMode) {
+      document.body.style.backgroundColor = '#0f0f0f';
+      document.body.style.color = '#e8e8e8';
+      
+      // Apply to all major elements
+      const headers = document.querySelectorAll('header, main, section');
+      headers.forEach(el => {
+        el.style.backgroundColor = '#0f0f0f';
+        el.style.color = '#e8e8e8';
+      });
+      
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.style.backgroundColor = '#1f1f1f';
+        card.style.borderColor = '#333';
+        card.style.color = '#e8e8e8';
+      });
+      
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        navbar.style.backgroundColor = '#0d3d0d';
+      }
+    } else {
+      document.body.style.backgroundColor = '';
+      document.body.style.color = '';
+      
+      const headers = document.querySelectorAll('header, main, section');
+      headers.forEach(el => {
+        el.style.backgroundColor = '';
+        el.style.color = '';
+      });
+      
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.style.backgroundColor = '';
+        card.style.borderColor = '';
+        card.style.color = '';
+      });
+      
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        navbar.style.backgroundColor = '';
+      }
+    }
+  }
+
+  // Debug helper: capture clicks and log target info (temporary)
+  function addClickDebugger() {
+    document.addEventListener('click', function(evt) {
+      try {
+        const t = evt.target;
+        const info = {
+          tag: t.tagName,
+          id: t.id || null,
+          classes: t.className || null,
+          href: t.getAttribute && t.getAttribute('href') || null,
+          defaultPrevented: evt.defaultPrevented
+        };
+        console.log('CLICK DEBUGGER:', info);
+        // show a quick outline so user can see where clicks land
+        if (t && t.style) {
+          const old = t.style.outline;
+          t.style.outline = '3px solid rgba(255,165,0,0.9)';
+          setTimeout(() => { t.style.outline = old; }, 400);
+        }
+      } catch (err) {
+        console.warn('click debugger error', err);
+      }
+    }, true); // capture phase
+  }
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    // Apply dark mode to body immediately if html has it
+    if (document.documentElement.classList.contains('dark-mode')) {
+      document.body.classList.add('dark-mode');
+      applyInlineStyles(true);
+    }
+    
+    loadComponent('navbar-container', 'navbar.html');
+    loadComponent('footer-container', 'footer.html');
+    addClickDebugger();
+  });
+})();
